@@ -15,6 +15,25 @@ Directory::Directory(const std::filesystem::path& path) : FileBase(path)
 			std::make_error_code(std::errc::not_a_directory));
 }
 
+Directory makeDirectory(const fs::path& dirPath) {
+	if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
+		throw fs::filesystem_error("Cannot create directory: path exists but is not a directory", dirPath,
+			std::make_error_code(std::errc::file_exists));
+		return Directory(dirPath);
+	}
+	try {
+		if (!fs::create_directories(dirPath)) {
+			throw fs::filesystem_error("Failed to create directory (unknown reason)", dirPath,
+				std::make_error_code(std::errc::io_error));
+		}
+	}
+	catch (const fs::filesystem_error& e) {
+		throw fs::filesystem_error(
+			std::string("Failed to create directory: ") + e.what(), dirPath, e.code());
+	}
+	return Directory(dirPath);
+}
+
 void Directory::rename(const std::string& newName)
 {
 	fs::path newPath = path.parent_path() / newName;

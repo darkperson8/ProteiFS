@@ -35,6 +35,25 @@ File::File(File&& other) noexcept : FileBase(std::move(other.path)), fileStream(
 	other.fileStream.setstate(std::ios::badbit);
 }
 
+File makeFile(const fs::path& filePath) {
+	if (fs::exists(filePath) && !fs::is_regular_file(filePath)) {
+		throw fs::filesystem_error("Cannot create file: path exists but is not a regular file", filePath,
+			std::make_error_code(std::errc::file_exists));
+	}
+	else {
+		try {
+			std::ofstream ofs(filePath, std::ios::out | std::ios::trunc);
+			if (!ofs.is_open())
+				throw fs::filesystem_error("Failed to create file", filePath, std::make_error_code(std::errc::io_error));
+		}
+		catch (const std::ios_base::failure& e) {
+			throw fs::filesystem_error( std::string("Failed to create file: ") + e.what(), filePath,
+				std::make_error_code(std::errc::io_error));
+		}
+	}
+	return File(filePath, false);
+}
+
 void File::rename(const std::string& newName)
 {
 	bool was_opened = fileStream.is_open();

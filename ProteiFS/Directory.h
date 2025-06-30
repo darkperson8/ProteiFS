@@ -20,3 +20,5 @@ public:
 	void remove() override;
 	FileBase::Type type() const override { return FileBase::Type::Directory; }
 };
+
+Directory makeDirectory(const std::filesystem::path& dirPath);

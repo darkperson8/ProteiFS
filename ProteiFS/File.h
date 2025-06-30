@@ -23,3 +23,5 @@ private:
 	std::fstream::pos_type readPos;
 	void ensureOpen();
 };
+
+File makeFile(const std::filesystem::path& filePath);
