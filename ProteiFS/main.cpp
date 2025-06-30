@@ -65,6 +65,8 @@ int main() {
         root.remove(); // удаляем корень
 
         std::cout << "Demo completed successfully." << std::endl;
+        std::cout << "Press Enter to finish..." << std::endl;
+        std::cin.get();
     }
     catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "Filesystem error: " << e.what() << std::endl;
